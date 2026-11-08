@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #080d16;
+  --color-panel: #111827;
+  --color-terminal: #00e5a0;
+  --color-tech: #38bdf8;
+  --color-warn: #facc15;
+  --color-error: #ef4444;
+  --color-ink: #e5e7eb;
+  --color-muted: #94a3b8;
+
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-void text-ink font-sans antialiased;
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-terminal;
+  }
+
+  ::selection {
+    @apply bg-terminal/30 text-ink;
+  }
+}
+
+@layer components {
+  .grid-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(56 189 248 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(56 189 248 / 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at 50% 0%, black, transparent 78%);
+  }
+
+  .scanline {
+    position: relative;
+  }
+
+  .scanline::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 2px,
+      rgb(0 0 0 / 0.22) 3px,
+      transparent 4px
+    );
+    opacity: 0.35;
+    border-radius: inherit;
+  }
+
+  .panel {
+    @apply rounded-lg border border-tech/20 bg-panel/70 backdrop-blur-sm;
+  }
+
+  .label {
+    @apply font-mono text-[11px] tracking-[0.22em] text-muted uppercase;
+  }
+}
+
+@keyframes boot-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
