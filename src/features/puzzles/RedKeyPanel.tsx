@@ -12,6 +12,13 @@ const RECOVERED = [
   { id: 'D', position: 3 },
 ] as const
 
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+/** Tabula recta: cell(row=key, column=plain) = cipher letter. */
+const VIGENERE_TABLE = ALPHABET.map((_, rowIndex) =>
+  ALPHABET.map((_, columnIndex) => ALPHABET[(rowIndex + columnIndex) % ALPHABET.length]),
+)
+
 export function RedKeyPanel() {
   const keyRed = useGameStore((state) => state.keyRed)
   const ready = keyRed !== null
@@ -58,6 +65,68 @@ export function RedKeyPanel() {
           ? 'Las iniciales de los tres nodos, en el orden en que fueron marcados, forman la clave. Úsala para descifrar la última transmisión.'
           : 'La topología todavía no fue resuelta: la clave sigue bloqueada.'}
       </p>
+
+      <details className="mt-3 rounded border border-tech/20 bg-void/40 px-3 py-2">
+        <summary className="cursor-pointer font-mono text-[10px] tracking-[0.2em] text-muted uppercase">
+          Tabla de Vigenère de referencia
+        </summary>
+
+        <p className="mt-2 text-xs text-muted">
+          Fila = letra de la clave, columna = letra del mensaje original. Para descifrar, busca la
+          letra cifrada dentro de la fila de la clave y lee el encabezado de la columna.
+        </p>
+
+        <div className="mt-2 overflow-x-auto">
+          <table className="border-collapse font-mono text-[10px]">
+            <caption className="sr-only">
+              Tabula recta de Vigenère: fila de la clave, columna del mensaje original
+            </caption>
+            <thead>
+              <tr>
+                <th className="sticky left-0 z-10 bg-panel px-1 py-0.5 text-muted/60">·</th>
+                {ALPHABET.map((letter) => (
+                  <th key={letter} className="border border-tech/15 px-1 py-0.5 text-muted/70">
+                    {letter}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {VIGENERE_TABLE.map((row, rowIndex) => {
+                const rowLetter = ALPHABET[rowIndex]
+                const keyed = ready && keyRed.toUpperCase().includes(rowLetter)
+                return (
+                  <tr key={rowLetter}>
+                    <th
+                      className={`sticky left-0 z-10 border border-tech/15 bg-panel px-1 py-0.5 text-left ${
+                        keyed ? 'text-terminal' : 'text-muted/70'
+                      }`}
+                    >
+                      {rowLetter}
+                    </th>
+                    {row.map((cell, columnIndex) => (
+                      <td
+                        key={`${rowIndex}-${columnIndex}`}
+                        className={`border border-tech/15 px-1 py-0.5 text-center ${
+                          keyed ? 'bg-terminal/5 text-ink/80' : 'text-ink/60'
+                        }`}
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {ready && (
+          <p className="mt-2 font-mono text-[10px] tracking-[0.14em] text-terminal uppercase">
+            Filas resaltadas: letras de la clave {keyRed}
+          </p>
+        )}
+      </details>
     </div>
   )
 }
