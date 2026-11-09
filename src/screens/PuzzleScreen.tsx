@@ -98,9 +98,12 @@ export function PuzzleScreen() {
             </>
           ) : (
             <>
-              <pre className="scanline overflow-x-auto rounded-md border border-tech/20 bg-[#060a12]/90 p-4 font-mono text-xs leading-relaxed text-tech/90 sm:text-sm">
-                {puzzle.content}
-              </pre>
+              {/* logic-gates ships its own schematic, so the raw block is not repeated. */}
+              {puzzle.id !== 'logic-gates' && (
+                <pre className="scanline overflow-x-auto rounded-md border border-tech/20 bg-[#060a12]/90 p-4 font-mono text-xs leading-relaxed text-tech/90 sm:text-sm">
+                  {puzzle.content}
+                </pre>
+              )}
 
               {support}
 
